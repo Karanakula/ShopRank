@@ -1,0 +1,15 @@
+pandas
+numpy
+scipy
+scikit-learn
+matplotlib
+seaborn
+pyarrow
+jupyter
+lightgbm
+xgboost
+sentence-transformers
+mlflow
+shap
+joblib
+pyyaml
