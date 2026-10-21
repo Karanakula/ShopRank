@@ -13,3 +13,4 @@ mlflow
 shap
 joblib
 pyyaml
+pytest

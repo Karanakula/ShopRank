@@ -47,3 +47,22 @@ The guide's T1 = 2023-06-01 / T2 = 2023-08-01 leaves only 82 test interactions a
 - Never shuffle rows across time.
 
 Outputs in `data/processed/`: `train.parquet`, `val.parquet`, `test.parquet`, `items.parquet`, `eval_users.parquet`.
+
+## Phase 4 — Evaluation harness + baselines (`notebooks/04_baselines.ipynb`)
+
+- Metrics in `src/shoprank/evaluation/metrics.py`; tests in `tests/test_metrics.py` (`python -m pytest`).
+- Hand check: recommended = [A, B, C], liked = {B} → Recall@3 = 1.0, NDCG@3 = 0.6309 = 1/log2(3). ✔
+- `evaluate()` removes products the user already bought in train before taking the top K.
+- Scored on the validation window (2022-07-01 → 2022-12-31). Coverage = share of the 9,999-product catalog shown to anyone.
+- Warm users: 4,549 (median 1 liked val product each, mean 2.37). Cold users: 1,495.
+
+## Results (validation, warm users, K = 10)
+
+| Model | Recall@10 | NDCG@10 | HitRate@10 | Coverage |
+|---|---|---|---|---|
+| Random | 0.0005 | 0.0004 | 0.0018 | 98.78% |
+| Popular (all time) | 0.0127 | 0.0071 | 0.0286 | 0.16% |
+| Trending (last 30 days) | 0.0251 | 0.0164 | 0.0517 | 0.13% |
+
+Cold users (no train history), same window: Popular Recall@10 0.0110 / NDCG@10 0.0092; Trending 0.0142 / 0.0112.
+Trending (1,454 likes on 1,023 products in June 2022, ties broken by all-time popularity) is the baseline to beat.
