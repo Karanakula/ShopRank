@@ -89,3 +89,53 @@ Trending (1,454 likes on 1,023 products in June 2022, ties broken by all-time po
 - TF-IDF beats embeddings (0.0770 vs 0.0626), likely because product titles carry exact platform and franchise words that bag-of-words matches directly.
 - Every source adds products no other source finds (in the saved candidates): pop 744, cf 169, tfidf 157, emb 102.
 - `data/processed/candidates_val.parquet`: 696,065 rows, 4,549 users, 124–165 candidates each, columns `cf_score`, `tfidf_score`, `emb_score`, `pop_rank`, `label` (liked in val; 0.20% positive).
+
+## Phase 6 — Supporting models
+
+### A. Sentiment (`notebooks/06a_sentiment.ipynb`)
+4–5★ = positive, 1–2★ = negative, 3★ dropped. TF-IDF (1–2-grams, min_df 5, 183k terms, **no stop-word list** — it would delete "not"), fit on 139,115 train reviews; scored on 19,792 validation reviews (90.8% positive).
+
+| Model | Accuracy | F1 pos | F1 neg | Macro F1 | PR-AUC neg |
+|---|---|---|---|---|---|
+| Always positive | 0.9081 | 0.9518 | 0.0000 | 0.4759 | 0.0919 |
+| Multinomial NB | 0.9572 | 0.9767 | 0.7349 | 0.8558 | 0.8305 |
+| Logistic Regression (balanced) | 0.9569 | 0.9760 | 0.7892 | 0.8826 | 0.8912 |
+| LinearSVC | 0.9683 | 0.9827 | 0.8122 | 0.8975 | 0.8996 |
+
+- LinearSVC is best, but `avg_sentiment` uses Logistic Regression because it gives probabilities.
+- Train reviews get **out-of-fold** probabilities (5 folds) so `avg_sentiment` isn't inflated by in-sample fit; 3★ reviews average 0.491 positive.
+- `data/processed/item_sentiment.parquet`: `avg_sentiment` for all 9,999 products (1,480 without train reviews → 0.822). Correlation with `train_avg_rating` is 0.873, so the ranker may find it largely redundant.
+- Caveat: Amazon auto-titles like "Five Stars" / "Two Stars" leak the label into the text and inflate the scores somewhat.
+- Stretch goal (DistilBERT) not done.
+
+### B. Rating regression from scratch (`notebooks/06b_rating.ipynb`)
+Features: user avg rating, product avg rating, price, `avg_sentiment`. Train rows use **leave-one-out** averages (a review's own rating/sentiment never feeds its features); validation rows use train averages. Standardized with a train-fit `StandardScaler` (on raw features lr=0.01 diverges to 1e220 because of price).
+
+- Learning rates (1,000 steps): 0.001 still descending (MSE 1.417), 0.01 converges (1.064), 0.1 converges in ~20 steps (1.064), 1.0 diverges. Plot: `reports/figures/rating_gd_lr.png`.
+
+| Model (validation, clipped to 1–5) | RMSE | MAE |
+|---|---|---|
+| Global mean | 1.0907 | 0.8390 |
+| **GD from scratch (lr=0.1)** | **1.0696** | **0.7877** |
+| sklearn LinearRegression | 1.0696 | 0.7877 |
+| Ridge | 1.0696 | 0.7877 |
+| GradientBoostingRegressor | 1.0671 | 0.7904 |
+
+- GD weights equal sklearn's to 4 decimals. Gains over the global mean are small: user average dominates (weight 0.45), price barely matters (0.01).
+- Saved to `models/rating_gd.joblib` (scaler + weights) for the dashboard's "expected rating".
+
+### C. User segments (`notebooks/06c_segments.ipynb`)
+Features per train user as of T1: purchases, days since last purchase, avg known price paid, avg rating given, verified share, distinct stores. `log1p` on the long-tailed four, then `StandardScaler`, K-Means k = 2…10.
+- Silhouette ≈ 0.18–0.22 for every k (overlapping groups, no clear elbow). Best in 4–6 is **k = 6** (0.207).
+
+| Segment | Users | Purchases | Days since last | Avg price | Avg rating | Verified |
+|---|---|---|---|---|---|---|
+| Budget buyers, lapsed | 8,061 | 5.8 | 661 | $30 | 4.62 | 97% |
+| Premium buyers, lapsed | 4,935 | 5.9 | 635 | $108 | 4.60 | 96% |
+| Frequent multi-store buyers | 3,039 | 13.6 | 375 | $52 | 4.46 | 94% |
+| Critical raters | 2,925 | 5.3 | 361 | $61 | 2.90 | 90% |
+| Light buyers | 1,849 | 2.4 | 413 | $39 | 4.54 | 95% |
+| Unverified reviewers | 1,515 | 8.1 | 376 | $61 | 4.16 | 15% |
+
+- PCA: PC1 (32%) = activity (purchases, stores), PC2 (21%) = rating + verified + recency. Plot: `reports/figures/segments_pca.png`.
+- `data/processed/user_segments.parquet`: `segment_id`, `segment_name` and the six features for 22,324 train users. Users not in train → `segment_id = -1` in Phase 7.
