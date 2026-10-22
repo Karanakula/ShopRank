@@ -66,3 +66,26 @@ Outputs in `data/processed/`: `train.parquet`, `val.parquet`, `test.parquet`, `i
 
 Cold users (no train history), same window: Popular Recall@10 0.0110 / NDCG@10 0.0092; Trending 0.0142 / 0.0112.
 Trending (1,454 likes on 1,023 products in June 2022, ties broken by all-time popularity) is the baseline to beat.
+
+## Phase 5 — Retrieval (`notebooks/05_retrieval.ipynb`, code in `src/shoprank/retrieval/`)
+
+- Sparse user × product matrix from train: 22,324 × 9,999, 149,524 filled (0.067%), 1.3 MB vs 0.89 GB dense. Columns cover all 9,999 products so text sources can reach products first seen after T1.
+- Sources, all fit on train only: item-KNN (cosine, 50 neighbours), TF-IDF (1–2-grams, min_df 3, 50k features, fit on the 8,519 train products), `all-MiniLM-L6-v2` embeddings (cached in `data/processed/item_embeddings.npy`, 26 s on MPS), trending popularity.
+- User profile = average vector of liked train products (464 users with no liked product fall back to all their products).
+- Equal quotas waste the strongest source: 25 from each (~91 products) gets 0.1007, *below* trending@100 alone. Giving popularity a bigger share fixes it.
+
+| Retrieval (validation, 4,549 warm users) | Recall | Avg candidates |
+|---|---|---|
+| Item-KNN @100 | 0.0575 | 100 |
+| TF-IDF @100 | 0.0770 | 100 |
+| Embeddings @100 | 0.0626 | 100 |
+| Trending @100 | 0.1028 | 100 |
+| Union 25/25/25/25 | 0.1007 | 91 |
+| Union 20/20/10/50 (cf/tfidf/emb/pop) | 0.1112 | 95 |
+| **Union 30/30/30/75 — saved** | **0.1477** | 153 |
+| Union 50/50/50/50 | 0.1484 | 179 |
+
+- 10% user sample run first: same ordering (trending 0.1270 > TF-IDF 0.0913 > embeddings 0.0644 > item-KNN 0.0519; saved union 0.1767).
+- TF-IDF beats embeddings (0.0770 vs 0.0626), likely because product titles carry exact platform and franchise words that bag-of-words matches directly.
+- Every source adds products no other source finds (in the saved candidates): pop 744, cf 169, tfidf 157, emb 102.
+- `data/processed/candidates_val.parquet`: 696,065 rows, 4,549 users, 124–165 candidates each, columns `cf_score`, `tfidf_score`, `emb_score`, `pop_rank`, `label` (liked in val; 0.20% positive).
