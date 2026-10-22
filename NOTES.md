@@ -139,3 +139,28 @@ Features per train user as of T1: purchases, days since last purchase, avg known
 
 - PCA: PC1 (32%) = activity (purchases, stores), PC2 (21%) = rating + verified + recency. Plot: `reports/figures/segments_pca.png`.
 - `data/processed/user_segments.parquet`: `segment_id`, `segment_name` and the six features for 22,324 train users. Users not in train → `segment_id = -1` in Phase 7.
+
+## Phase 7 — Ranker data (`notebooks/07_ranker_data.ipynb`, code in `src/shoprank/ranking/`)
+
+Both copies come from one function, `build_snapshot(interactions, cutoff, label_end)`, which refits item-KNN, TF-IDF, embedding profiles and trending on the history before its cutoff and recomputes every feature from that history. Phase 6 models fit on train only (sentiment classifier → `models/sentiment_lr.joblib`, segment scaler + K-Means → `models/segments.joblib`) are reused with `.predict()`.
+
+| Copy | Features from | Labels from | Rows | Users | Positive rate |
+|---|---|---|---|---|---|
+| `ranker_train.parquet` | before 2022-07-01 | 2022-07-01 → 2022-12-31 | 174,135 | 1,141 | **0.81%** |
+| `ranker_test.parquet` | before 2023-01-01 | 2023-01-01 → end | 571,098 | 3,719 | **0.22%** |
+
+- Users scored = seen before the cutoff and liked ≥1 product in the label window. For the test copy "seen" means train **or** validation, so it has 3,719 users (vs 2,686 when counting train only in Phase 3).
+- Candidate recall: train copy 0.1477 (matches Phase 5 exactly), test copy 0.1417.
+- Only 25% (train) / 26% (test) of users have any liked product among their candidates. The training copy drops the other 3,408 users (696,065 → 174,135 rows); the test copy keeps them, so test Recall@K can never exceed ~0.14.
+- Val/test review sentiment comes from the train-fit classifier; train reviews keep out-of-fold scores.
+- **Leakage test** (`tests/test_leakage.py`): rebuilds the T1 copy with every row on/after T1 scrambled (ratings, sentiment, verified flag, plus 2,000 fake future purchases). All 18 features are identical for matching (user, product) rows; labels change. Sanity check: deliberately computing product stats from all rows makes the test fail on `item_review_count`.
+
+**Feature selection (training copy)**
+- Correlation heatmap (`reports/figures/ranker_feature_corr.png`): no pair above |r| 0.9. Strongest: item_avg_rating vs item_avg_sentiment 0.857, price vs price_minus_user_avg 0.784, tfidf vs emb 0.735.
+- Pearson with label: all |r| < 0.05 (0.8% positives); strongest bought_store_before 0.045, item_review_count 0.036, tfidf/cf/emb ≈ 0.023.
+- Chi-square: 26 of 51 store columns and 2 of 6 segment columns significant at p < 0.05 (PlayStation store χ² = 144).
+
+**Final features (17):** n_purchases, avg_rating_given, days_since_last, segment_id · item_review_count, item_avg_rating, item_avg_sentiment, price, price_missing, store, item_days_since_first · cf_score, tfidf_score, emb_score, pop_rank, price_minus_user_avg, bought_store_before.
+- Dropped `avg_price_paid`: exactly price − price_minus_user_avg (the three columns have rank 2) and the weakest label correlation (−0.0001).
+- Weak-screen features (item_avg_rating, item_avg_sentiment, days_since_last) are kept for the Phase 8 importance/SHAP recheck.
+- Preprocessing: `shoprank.ranking.preprocess.make_preprocessor()` — StandardScaler on numeric, one-hot segment_id and the top 50 stores (rest → "infrequent"); fit on the training copy only. 1.8% of test rows have a store never seen in train.
