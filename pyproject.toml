@@ -1,3 +1,32 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "shoprank"
+version = "0.9.0"
+description = "Two-stage product recommender on Amazon Reviews 2023 (Video Games)"
+requires-python = ">=3.11"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
 [tool.pytest.ini_options]
-pythonpath = ["src"]
+pythonpath = ["src", "."]
 testpaths = ["tests"]
+filterwarnings = ["ignore:Using `httpx` with `starlette.testclient` is deprecated"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+extend-exclude = ["mlruns"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP"]
+ignore = ["B905"]
+
+[tool.ruff.lint.per-file-ignores]
+"notebooks/*.ipynb" = ["E402", "E501"]  # imports follow sys.path.insert("../src"); long print lines
+
+[tool.ruff.lint.isort]
+known-first-party = ["shoprank", "api", "conftest"]

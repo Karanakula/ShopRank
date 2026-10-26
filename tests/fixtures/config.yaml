@@ -1,0 +1,25 @@
+# Same structure as config.yaml, sized for the 26-review fixture. tests/conftest.py copies this into a
+# temporary folder (paths are relative to it) and runs the real pipeline on it.
+category: Fixture
+random_state: 42
+paths: {raw: raw, interim: interim, processed: processed, models: models, figures: figures}
+min_date: "2018-01-01"
+liked_min_rating: 4
+k_core: 2
+split: {t1: "2022-07-01", t2: "2023-01-01"}
+retrieval:
+  quotas: {cf: 3, tfidf: 3, emb: 3, pop: 5}
+  item_knn_neighbors: 3
+  trending_days: 30
+  tfidf: {ngram_range: [1, 1], min_df: 1, max_features: 1000, stop_words: english}
+  embedding_model: all-MiniLM-L6-v2
+  embedding_batch_size: 8
+sentiment: {tfidf: {ngram_range: [1, 1], min_df: 1, max_features: 1000, sublinear_tf: true}, C: 1.0, oof_folds: 2}
+rating: {learning_rate: 0.1, n_steps: 200}
+segments: {k: 2}
+ranker:
+  model: lightgbm
+  top_stores: 50
+  params: {n_estimators: 10, learning_rate: 0.1, num_leaves: 4, min_child_samples: 1}
+quality_gate: {min_ndcg: 0.0, min_roc_auc: 0.0}
+evaluation: {k: 10}

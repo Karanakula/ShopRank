@@ -1,0 +1,142 @@
+[
+  {
+    "user_id": "AEG77GNXCT3D6YMHUWCYK6IKS2ZQ",
+    "segment": "Budget buyers, lapsed",
+    "n_purchases": 7,
+    "overlap_with_popular": 1,
+    "label": "Budget buyers, lapsed \u00b7 7 purchases \u00b7 mostly WolfLawS"
+  },
+  {
+    "user_id": "AFNEEGDM2LBBMPI6TWUNELYYMVOA",
+    "segment": "Budget buyers, lapsed",
+    "n_purchases": 5,
+    "overlap_with_popular": 1,
+    "label": "Budget buyers, lapsed \u00b7 5 purchases \u00b7 mostly Electronic Arts"
+  },
+  {
+    "user_id": "AEHTIHS5YN7GKCFWEQNUNORJTVZA",
+    "segment": "Budget buyers, lapsed",
+    "n_purchases": 5,
+    "overlap_with_popular": 1,
+    "label": "Budget buyers, lapsed \u00b7 5 purchases \u00b7 mostly NUBWO"
+  },
+  {
+    "user_id": "AE6N7BYWKGLBJZ4I2DWUI62MS2AA",
+    "segment": "Budget buyers, lapsed",
+    "n_purchases": 5,
+    "overlap_with_popular": 2,
+    "label": "Budget buyers, lapsed \u00b7 5 purchases \u00b7 mostly PlayStation"
+  },
+  {
+    "user_id": "AEEUC25NEAVIXQZWHLQSNO7EJRPA",
+    "segment": "Premium buyers, lapsed",
+    "n_purchases": 5,
+    "overlap_with_popular": 2,
+    "label": "Premium buyers, lapsed \u00b7 5 purchases \u00b7 mostly Logitech G"
+  },
+  {
+    "user_id": "AEDNI2FXB2YBAK4ZEIM3KDYNJU4A",
+    "segment": "Premium buyers, lapsed",
+    "n_purchases": 5,
+    "overlap_with_popular": 2,
+    "label": "Premium buyers, lapsed \u00b7 5 purchases \u00b7 mostly Razer"
+  },
+  {
+    "user_id": "AEQTAPE65QSKZ5ORRJA2R33EBTWA",
+    "segment": "Premium buyers, lapsed",
+    "n_purchases": 6,
+    "overlap_with_popular": 2,
+    "label": "Premium buyers, lapsed \u00b7 6 purchases \u00b7 mostly Corsair"
+  },
+  {
+    "user_id": "AFFFY3QJITO26L63BJJC76GIFDKQ",
+    "segment": "Premium buyers, lapsed",
+    "n_purchases": 6,
+    "overlap_with_popular": 2,
+    "label": "Premium buyers, lapsed \u00b7 6 purchases \u00b7 mostly SteelSeries"
+  },
+  {
+    "user_id": "AGR7SDP7BNTUKANSNIBKCA7CF44Q",
+    "segment": "Frequent multi-store buyers",
+    "n_purchases": 27,
+    "overlap_with_popular": 1,
+    "label": "Frequent multi-store buyers \u00b7 27 purchases \u00b7 mostly Nintendo"
+  },
+  {
+    "user_id": "AF3DH4S4HIU7O4MJ7EBUQAL6NZZQ",
+    "segment": "Frequent multi-store buyers",
+    "n_purchases": 17,
+    "overlap_with_popular": 1,
+    "label": "Frequent multi-store buyers \u00b7 17 purchases \u00b7 mostly PlayStation"
+  },
+  {
+    "user_id": "AFCYHW765AB3TNZPTLG2ODSWAJNQ",
+    "segment": "Frequent multi-store buyers",
+    "n_purchases": 27,
+    "overlap_with_popular": 1,
+    "label": "Frequent multi-store buyers \u00b7 27 purchases \u00b7 mostly Nintendo"
+  },
+  {
+    "user_id": "AECWEY5OG4EWTPVXXHNOAMOYKZ7Q",
+    "segment": "Frequent multi-store buyers",
+    "n_purchases": 10,
+    "overlap_with_popular": 1,
+    "label": "Frequent multi-store buyers \u00b7 10 purchases \u00b7 mostly Bethesda"
+  },
+  {
+    "user_id": "AEAQEM2VIDNKCEZJOBYNPHPONCFA",
+    "segment": "Unverified reviewers",
+    "n_purchases": 8,
+    "overlap_with_popular": 0,
+    "label": "Unverified reviewers \u00b7 8 purchases \u00b7 mostly RK ROYAL KLUDGE"
+  },
+  {
+    "user_id": "AEE6XSCBC4DMA44LOI47R55QIYYA",
+    "segment": "Unverified reviewers",
+    "n_purchases": 10,
+    "overlap_with_popular": 0,
+    "label": "Unverified reviewers \u00b7 10 purchases \u00b7 mostly Fegliea"
+  },
+  {
+    "user_id": "AFTPSFNBKNVMAEXA6Q767A4B65FA",
+    "segment": "Unverified reviewers",
+    "n_purchases": 10,
+    "overlap_with_popular": 0,
+    "label": "Unverified reviewers \u00b7 10 purchases \u00b7 mostly TALK WORKS"
+  },
+  {
+    "user_id": "AH3YYK4E4NIDALN4BRETKMOCXHMQ",
+    "segment": "Critical raters",
+    "n_purchases": 8,
+    "overlap_with_popular": 0,
+    "label": "Critical raters \u00b7 8 purchases \u00b7 mostly eXtremeRate"
+  },
+  {
+    "user_id": "AFRT2PL27MQDBBGSJFTQKQBHMBPQ",
+    "segment": "Critical raters",
+    "n_purchases": 10,
+    "overlap_with_popular": 0,
+    "label": "Critical raters \u00b7 10 purchases \u00b7 mostly KIWI design"
+  },
+  {
+    "user_id": "AEDBCIKXI56SPT3R5KDKSWI7PLSA",
+    "segment": "Critical raters",
+    "n_purchases": 12,
+    "overlap_with_popular": 1,
+    "label": "Critical raters \u00b7 12 purchases \u00b7 mostly Logitech G"
+  },
+  {
+    "user_id": "AFH7SSVNASVD2G56PP5FWRXPLOSQ",
+    "segment": "Light buyers",
+    "n_purchases": 5,
+    "overlap_with_popular": 0,
+    "label": "Light buyers \u00b7 5 purchases \u00b7 mostly eXtremeRate"
+  },
+  {
+    "user_id": "AEPATZHVEHGAR5GJFXFNRMIKI4AQ",
+    "segment": "Light buyers",
+    "n_purchases": 7,
+    "overlap_with_popular": 0,
+    "label": "Light buyers \u00b7 7 purchases \u00b7 mostly eXtremeRate"
+  }
+]

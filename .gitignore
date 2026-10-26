@@ -8,3 +8,10 @@ data/interim/
 data/processed/
 
 models/*.joblib
+mlflow.db
+mlruns/
+models/*.parquet
+models/*.npy
+models/*.json
+*.egg-info/
+logs/

@@ -9,6 +9,7 @@ def top_n_mask(scores: np.ndarray, seen: csr_matrix, n: int) -> np.ndarray:
     """Boolean (users, items) mask of each row's top `n` unseen items."""
     s = np.array(scores, dtype=np.float32, copy=True)
     s[seen.nonzero()] = -np.inf
+    n = min(n, s.shape[1])
     top = np.argpartition(-s, n - 1, axis=1)[:, :n]
     mask = np.zeros_like(s, dtype=bool)
     np.put_along_axis(mask, top, True, axis=1)

@@ -48,6 +48,18 @@ def test_evaluate_skips_seen_items():
     assert result["coverage@1"] == 0.25
 
 
+def test_ranking_metrics_on_scored_candidates():
+    from shoprank.evaluation.ranking import ranking_metrics, top_k_lists
+
+    df = pd.DataFrame({"user_id": ["u", "u", "u", "v", "v"], "parent_asin": ["A", "B", "C", "A", "D"],
+                       "score": [0.1, 0.9, 0.5, 0.3, 0.2]})
+    lists = top_k_lists(df, "score", k=2)
+    assert lists["u"] == ["B", "C"] and lists["v"] == ["A", "D"]
+    # v liked "Z", which retrieval never surfaced: it still counts as a miss
+    out = ranking_metrics(lists, {"u": {"B"}, "v": {"Z"}}, k=2, catalog_size=4)
+    assert out["recall@2"] == 0.5 and out["ndcg@2"] == 0.5 and out["coverage@2"] == 1.0
+
+
 def test_trending_falls_back_to_all_time():
     train = pd.DataFrame({
         "parent_asin": ["old", "old", "old", "new"],

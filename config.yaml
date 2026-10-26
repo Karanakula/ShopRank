@@ -1,0 +1,57 @@
+category: Video_Games
+random_state: 42
+
+paths:            # relative to this file
+  raw: data/raw
+  interim: data/interim
+  processed: data/processed
+  models: models
+  figures: reports/figures
+
+min_date: "2018-01-01"
+liked_min_rating: 4
+k_core: 5
+split:
+  # The guide's 2023-06-01 / 2023-08-01 leave ~80 test interactions after the 5-core filter,
+  # because collection ended in Sept 2023 (see NOTES.md, Phase 3).
+  t1: "2022-07-01"
+  t2: "2023-01-01"
+
+retrieval:
+  quotas: {cf: 30, tfidf: 30, emb: 30, pop: 75}   # candidates taken from each source
+  item_knn_neighbors: 50
+  trending_days: 30
+  tfidf: {ngram_range: [1, 2], min_df: 3, max_features: 50000, stop_words: english}
+  embedding_model: all-MiniLM-L6-v2
+  embedding_batch_size: 64
+
+sentiment:
+  tfidf: {ngram_range: [1, 2], min_df: 5, max_features: 200000, sublinear_tf: true}
+  C: 4.0
+  oof_folds: 5
+
+rating:
+  learning_rate: 0.1
+  n_steps: 1000
+
+segments:
+  k: 6
+
+ranker:
+  model: lightgbm
+  top_stores: 50
+  params:           # tuned in notebooks/08_rankers.ipynb (RandomizedSearchCV -> GridSearchCV)
+    n_estimators: 473
+    learning_rate: 0.01454496455248229
+    num_leaves: 29
+    min_child_samples: 162
+    subsample: 0.7593953108716831
+    subsample_freq: 1
+    colsample_bytree: 0.5616474002791129
+
+quality_gate:  # tests/test_model_quality.py and the evaluate stage reject a model below these
+  min_ndcg: 0.025
+  min_roc_auc: 0.70
+
+evaluation:
+  k: 10

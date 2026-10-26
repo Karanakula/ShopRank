@@ -14,3 +14,9 @@ shap
 joblib
 pyyaml
 pytest
+fastapi
+uvicorn
+pydantic
+httpx
+streamlit
+requests
